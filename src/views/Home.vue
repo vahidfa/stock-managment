@@ -1,18 +1,29 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js App" />
-  </div>
+  <product-list-card :items="productList" />
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from "@/components/HelloWorld.vue";
-
+import { mapActions, mapGetters } from "vuex";
 export default {
   name: "Home",
   components: {
-    HelloWorld,
+    ProductListCard: () =>
+      import(
+        /* webpackChunkName: "home" */ "@/components/Product/ProductListCard.vue"
+      ),
+  },
+  computed: {
+    ...mapGetters({
+      productList: "product/productList",
+    }),
+  },
+  mounted() {
+    this.fetchProductList();
+  },
+  methods: {
+    ...mapActions({
+      fetchProductList: "product/fetchProductList",
+    }),
   },
 };
 </script>
