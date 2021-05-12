@@ -11,17 +11,34 @@
     <v-row>
       <v-col cols="12" md="6">
         <v-text-field
+          type="number"
+          :rules="rules"
           v-model="refill"
           placeholder="Enter amount to refill..."
         />
-        <v-btn :loading="refillLoading" color="primary" @click="refillStock">
+        <v-btn
+          :disabled="!refill.length || refill <= 0"
+          :loading="refillLoading"
+          color="primary"
+          @click="refillStock"
+        >
           Refill
         </v-btn>
       </v-col>
       <v-col cols="12" md="6">
-        <v-text-field v-model="buy" placeholder="Enter amount to buy..." />
-        <v-btn :loading="buyLoading" color="primary" @click="purchase">
-          Buy
+        <v-text-field
+          type="number"
+          :rules="rules"
+          v-model="purchase"
+          placeholder="Enter amount to purchase..."
+        />
+        <v-btn
+          :disabled="!purchase.length || purchase <= 0"
+          :loading="purchaseLoading"
+          color="primary"
+          @click="buyProduct"
+        >
+          Purchase
         </v-btn>
       </v-col>
     </v-row>
@@ -49,11 +66,12 @@ export default {
   data() {
     return {
       refillLoading: false,
-      buyLoading: false,
-      buy: "",
+      purchaseLoading: false,
+      purchase: "",
       refill: "",
       error: "",
       show: false,
+      rules: [(value) => (value && value >= 1) || "minimum is 1"],
     };
   },
   methods: {
@@ -79,13 +97,13 @@ export default {
         this.refillLoading = false;
       }
     },
-    async purchase() {
+    async buyProduct() {
       try {
-        this.buyLoading = true;
+        this.purchaseLoading = true;
 
         await this.purchaseProduct({
           id: this.item.id,
-          amount: this.buy,
+          amount: this.purchase,
         });
 
         await this.fetchProductItem(this.item.id);
@@ -93,7 +111,7 @@ export default {
         this.error = error.response.data || "server error";
         this.show = true;
       } finally {
-        this.buyLoading = false;
+        this.purchaseLoading = false;
       }
     },
   },
